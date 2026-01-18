@@ -4,6 +4,7 @@ import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import ClipCard from '../components/ClipCard';
 import { useSidebar } from '../context/SidebarContext';
+import { API_URL } from '../config';
 
 function LivestreamDetails() {
     const { id } = useParams();
@@ -21,7 +22,7 @@ function LivestreamDetails() {
 
     const fetchLivestreamClips = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/clips/livestream/${id}`);
+            const response = await axios.get(`${API_URL}/api/clips/livestream/${id}`);
             setLivestream(response.data.livestream);
             setClips(response.data.clips);
         } catch (error) {
@@ -34,7 +35,7 @@ function LivestreamDetails() {
     const handleDelete = async () => {
         setDeleting(true);
         try {
-            await axios.delete(`http://localhost:5000/api/clips/livestream/${id}`);
+            await axios.delete(`${API_URL}/api/clips/livestream/${id}`);
             navigate('/history');
         } catch (error) {
             console.error('Delete error:', error);

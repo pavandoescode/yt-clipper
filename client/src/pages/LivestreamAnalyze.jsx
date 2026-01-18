@@ -4,6 +4,7 @@ import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import ClipCard from '../components/ClipCard';
 import { useSidebar } from '../context/SidebarContext';
+import { API_URL } from '../config';
 
 function LivestreamAnalyze() {
     const { videoId } = useParams();
@@ -25,7 +26,7 @@ function LivestreamAnalyze() {
         const fetchExistingClips = async () => {
             try {
                 // Check for existing clips
-                const clipsRes = await axios.get(`http://localhost:5000/api/clips/by-video/${videoId}`);
+                const clipsRes = await axios.get(`${API_URL}/api/clips/by-video/${videoId}`);
                 if (clipsRes.data.exists && clipsRes.data.clips.length > 0) {
                     setResult({ clips: clipsRes.data.clips });
                     setInputCollapsed(true);
@@ -33,7 +34,7 @@ function LivestreamAnalyze() {
 
                 // Get stream info from ChannelStream for Mark Done functionality
                 try {
-                    const streamRes = await axios.get(`http://localhost:5000/api/channel/stream/video/${videoId}`);
+                    const streamRes = await axios.get(`${API_URL}/api/channel/stream/video/${videoId}`);
                     if (streamRes.data) {
                         setStreamInfo(streamRes.data);
                     }
@@ -68,7 +69,7 @@ function LivestreamAnalyze() {
 
         try {
             const response = await fetch(
-                `http://localhost:5000/api/clips/analyze-stream?url=${encodeURIComponent(url)}`,
+                `${API_URL}/api/clips/analyze-stream?url=${encodeURIComponent(url)}`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -146,7 +147,7 @@ function LivestreamAnalyze() {
             return;
         }
         try {
-            await axios.patch(`http://localhost:5000/api/channel/stream/${streamInfo._id}/done`);
+            await axios.patch(`${API_URL}/api/channel/stream/${streamInfo._id}/done`);
         } catch (error) {
             console.error('Mark done error:', error);
         }

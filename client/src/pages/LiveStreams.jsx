@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useSidebar } from '../context/SidebarContext';
+import { API_URL } from '../config';
 
 function LiveStreams() {
     const { collapsed } = useSidebar();
@@ -35,7 +36,7 @@ function LiveStreams() {
         else setLoadingMore(true);
 
         try {
-            const response = await axios.get(`http://localhost:5000/api/channel/streams?page=${pageNum}&limit=9&showDone=${showDone}&sortOrder=${sortOrder}`);
+            const response = await axios.get(`${API_URL}/api/channel/streams?page=${pageNum}&limit=9&showDone=${showDone}&sortOrder=${sortOrder}`);
             const data = response.data;
 
             if (reset) {
@@ -64,7 +65,7 @@ function LiveStreams() {
         setMessage('');
         setIsError(false);
         try {
-            const response = await axios.post('http://localhost:5000/api/channel/fetch');
+            const response = await axios.post(`${API_URL}/api/channel/fetch`);
             setMessage(response.data.message);
             setIsError(false);
             // Refresh the list
@@ -89,7 +90,7 @@ function LiveStreams() {
     const handleMarkDone = async (streamId) => {
         setMarkingDoneId(streamId);
         try {
-            await axios.patch(`http://localhost:5000/api/channel/stream/${streamId}/done`);
+            await axios.patch(`${API_URL}/api/channel/stream/${streamId}/done`);
             // Remove from current list
             setStreams(prev => prev.filter(s => s._id !== streamId));
             // Update counts
@@ -99,7 +100,7 @@ function LiveStreams() {
             // Fetch one replacement stream if more are available
             if (hasMore) {
                 const currentCount = streams.length - 1; // After removal
-                const response = await axios.get(`http://localhost:5000/api/channel/streams?page=1&limit=${currentCount + 1}&showDone=${showDone}&sortOrder=${sortOrder}`);
+                const response = await axios.get(`${API_URL}/api/channel/streams?page=1&limit=${currentCount + 1}&showDone=${showDone}&sortOrder=${sortOrder}`);
                 const data = response.data;
                 // Get the last stream which should be the new one
                 if (data.streams.length > currentCount) {
@@ -117,11 +118,11 @@ function LiveStreams() {
     const handleUndo = async (streamId) => {
         setMarkingDoneId(streamId);
         try {
-            await axios.patch(`http://localhost:5000/api/channel/stream/${streamId}/undo`);
+            await axios.patch(`${API_URL}/api/channel/stream/${streamId}/undo`);
             // Remove from current done list
             setStreams(prev => prev.filter(s => s._id !== streamId));
             // Refetch to get updated counts
-            const response = await axios.get(`http://localhost:5000/api/channel/streams?page=1&limit=1&showDone=${showDone}&sortOrder=${sortOrder}`);
+            const response = await axios.get(`${API_URL}/api/channel/streams?page=1&limit=1&showDone=${showDone}&sortOrder=${sortOrder}`);
             const data = response.data;
             setTotal(data.total);
             setTotalDone(data.totalDone);

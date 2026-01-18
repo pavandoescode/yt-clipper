@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useSidebar } from '../context/SidebarContext';
+import { API_URL } from '../config';
 
 function Sidebar() {
   const { user, logout } = useAuth();
@@ -14,7 +15,7 @@ function Sidebar() {
     const fetchSavedCount = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/clips/saved', {
+        const response = await axios.get(`${API_URL}/api/clips/saved`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSavedCount(response.data.clips?.length || 0);

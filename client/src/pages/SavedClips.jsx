@@ -3,6 +3,7 @@ import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import ClipCard from '../components/ClipCard';
 import { useSidebar } from '../context/SidebarContext';
+import { API_URL } from '../config';
 
 function SavedClips() {
     const { collapsed } = useSidebar();
@@ -17,7 +18,7 @@ function SavedClips() {
         try {
             const token = localStorage.getItem('token');
             console.log('Fetching saved clips with token:', !!token);
-            const response = await axios.get('http://localhost:5000/api/clips/saved', {
+            const response = await axios.get(`${API_URL}/api/clips/saved`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log('Saved clips response:', response.data);

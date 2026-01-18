@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 function ClipCard({ clip, onSaveToggle }) {
     const [saving, setSaving] = useState(false);
@@ -16,7 +17,7 @@ function ClipCard({ clip, onSaveToggle }) {
         setTextSaving(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/clips/${clip._id}/update-text`, {
+            await axios.patch(`${API_URL}/api/clips/${clip._id}/update-text`, {
                 customTitle,
                 thumbnailTopText,
                 thumbnailMainText
@@ -75,7 +76,7 @@ function ClipCard({ clip, onSaveToggle }) {
         setSaving(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/clips/${clip._id}/save`, {
+            await axios.patch(`${API_URL}/api/clips/${clip._id}/save`, {
                 customTitle,
                 thumbnailTopText,
                 thumbnailMainText

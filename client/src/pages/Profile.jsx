@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useSidebar } from '../context/SidebarContext';
 import axios from 'axios';
+import { API_BASE } from '../config';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = API_BASE;
 
 function Profile() {
     const { user, logout } = useAuth();
