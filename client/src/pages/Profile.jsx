@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useSidebar } from '../context/SidebarContext';
 import axios from 'axios';
-import { API_URL } from '../config/api';
+
+const API_URL = 'http://localhost:5000/api';
 
 function Profile() {
     const { user, logout } = useAuth();
@@ -28,7 +29,7 @@ function Profile() {
     const fetchCredits = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`${API_URL}/api/auth/credits`, {
+            const response = await axios.get(`${API_URL}/auth/credits`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCredits(response.data);
@@ -56,7 +57,7 @@ function Profile() {
         setPinLoading(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`${API_URL}/api/auth/change-pin`,
+            await axios.patch(`${API_URL}/auth/change-pin`,
                 { currentPin, newPin },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

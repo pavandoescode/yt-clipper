@@ -3,7 +3,6 @@ import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import ClipCard from '../components/ClipCard';
 import { useSidebar } from '../context/SidebarContext';
-import { API_URL } from '../config/api';
 
 function Dashboard() {
     const { collapsed } = useSidebar();
@@ -21,7 +20,7 @@ function Dashboard() {
         setResult(null);
 
         try {
-            const response = await axios.post(`${API_URL}/api/clips/analyze`, { url });
+            const response = await axios.post('http://localhost:5000/api/clips/analyze', { url });
             setResult(response.data);
         } catch (error) {
             setError(error.response?.data?.message || 'Failed to analyze video. Please try again.');

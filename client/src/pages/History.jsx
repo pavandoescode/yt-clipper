@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useSidebar } from '../context/SidebarContext';
-import { API_URL } from '../config/api';
 
 function History() {
     const { collapsed } = useSidebar();
@@ -26,7 +25,7 @@ function History() {
 
     const fetchHistory = async () => {
         try {
-            const response = await axios.get(`${API_URL}/api/clips/history`);
+            const response = await axios.get('http://localhost:5000/api/clips/history');
             setLivestreams(response.data.livestreams);
         } catch (error) {
             console.error('Fetch error:', error);
@@ -37,7 +36,7 @@ function History() {
     const handleDelete = async (id) => {
         setDeleting(id);
         try {
-            await axios.delete(`${API_URL}/api/clips/livestream/${id}`);
+            await axios.delete(`http://localhost:5000/api/clips/livestream/${id}`);
             setLivestreams(prev => prev.filter(stream => stream._id !== id));
         } catch (error) {
             console.error('Delete error:', error);
