@@ -100,46 +100,4 @@ router.patch('/change-pin', async (req, res) => {
     }
 });
 
-// GET /api/auth/credits - Get OpenRouter credits
-router.get('/credits', async (req, res) => {
-    try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        // Add timeout to prevent hanging
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        try {
-            const response = await fetch('https://openrouter.ai/api/v1/credits', {
-                headers: {
-                    'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`
-                },
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
-
-            if (!response.ok) {
-                return res.status(500).json({ message: 'Failed to fetch credits' });
-            }
-
-            const data = await response.json();
-            return res.json({
-                totalCredits: data.data?.total_credits || 0,
-                totalUsage: data.data?.total_usage || 0,
-                remaining: (data.data?.total_credits || 0) - (data.data?.total_usage || 0)
-            });
-        } catch (fetchError) {
-            clearTimeout(timeout);
-            console.error('Credits fetch error:', fetchError.message);
-            return res.status(503).json({ message: 'Service unavailable - network error' });
-        }
-    } catch (error) {
-        console.error('Credits error:', error.message);
-        return res.status(500).json({ message: 'Server error' });
-    }
-});
-
 export default router;

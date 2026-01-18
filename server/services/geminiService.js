@@ -1,5 +1,8 @@
-// Using OpenRouter API with Gemini 3 Pro Preview
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+// Using Google Generative AI SDK directly for better video analysis
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize the SDK with API key (supports both env variable names)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
 
 const CLIP_ANALYSIS_PROMPT = `You are a YouTube clip analyzer. Your job is to analyze livestream videos and identify viral-worthy moments.
 
@@ -44,7 +47,7 @@ uncomfortable truths
 Moments showing struggle, frustration, or emotional honesty.
 
 Examples:
-“I’m tired but still pushing”
+"I'm tired but still pushing"
 loneliness, doubt, FOMO
 being left behind while others succeed
 
@@ -70,8 +73,8 @@ respecting your time
 Encouragement mixed with emotional intensity.
 
 Examples:
-“You’re the last hope”
-“Best version of yourself”
+"You're the last hope"
+"Best version of yourself"
 "Confusion is Just Laziness- start working hard now"
 "You don't cry for girl"
 "The 3 AM Instagram Trap "
@@ -82,7 +85,7 @@ A) Similar clips
 Moments that match the patterns above.
 
 B) New clip opportunities
-Moments that weren’t in past titles but fit what the audience would love next.
+Moments that weren't in past titles but fit what the audience would love next.
 
 Think:
 raw honesty
@@ -116,7 +119,7 @@ punchy moments
 clear narrative flow
 motivational quotes.
 
-Only extract moments that trigger emotion, push mindset, or feel “clippable.”
+Only extract moments that trigger emotion, push mindset, or feel "clippable."
 
 
 ---
@@ -154,33 +157,17 @@ ANALYZE THIS LIVESTREAM:  `;
 
 export async function analyzeVideo(videoUrl) {
   try {
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:5173',
-        'X-Title': 'YT Clipper Dashboard'
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-3-pro-preview',
-        messages: [
-          {
-            role: 'user',
-            content: CLIP_ANALYSIS_PROMPT + videoUrl
-          }
-        ],
-        response_format: { type: 'json_object' }
-      })
+    // Use Gemini 2.5 Pro for the best quality analysis
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-pro-preview-05-06',
+      generationConfig: {
+        responseMimeType: 'application/json'
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `OpenRouter API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    const text = result.choices[0]?.message?.content || '';
+    const result = await model.generateContent(CLIP_ANALYSIS_PROMPT + videoUrl);
+    const response = await result.response;
+    const text = response.text();
 
     // Clean up the response - remove markdown code blocks if present
     let cleanedText = text.trim();
@@ -208,7 +195,7 @@ export async function analyzeVideo(videoUrl) {
       }
     };
   } catch (error) {
-    console.error('OpenRouter API error:', error);
+    console.error('Gemini API error:', error);
     return {
       success: false,
       error: error.message
