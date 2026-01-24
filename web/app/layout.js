@@ -6,6 +6,9 @@ import PingWidget from "@/components/PingWidget";
 export const metadata = {
   title: "YT Clipper",
   description: "Advanced YouTube Clipper Dashboard",
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }) {
