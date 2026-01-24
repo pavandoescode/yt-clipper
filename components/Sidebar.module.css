@@ -1,0 +1,214 @@
+/* Sidebar.module.css */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: var(--header-height);
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--header-height));
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.collapsed {
+  width: 72px;
+}
+
+.sidebarNav {
+  flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.collapsed .sidebarNav {
+  padding: 16px 8px;
+}
+
+.sidebarLink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.collapsed .sidebarLink {
+  padding: 14px;
+  justify-content: center;
+}
+
+.collapsed .sidebarLink span {
+  display: none;
+}
+
+.sidebarLink:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.active {
+  background: var(--bg-active);
+  color: var(--accent);
+}
+
+.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  background: var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+
+.sidebarLink svg {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.collapsed .sidebarLink svg {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+}
+
+.sidebarBadge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #000000;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.collapsed .sidebarBadge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 5px;
+  font-size: 10px;
+  min-width: 16px;
+}
+
+.sidebarFooter {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+
+.collapsed .sidebarFooter {
+  padding: 12px 8px;
+}
+
+.sidebarUser {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.collapsed .sidebarUser {
+  padding: 8px;
+  justify-content: center;
+}
+
+.collapsed .sidebarUser .userEmail {
+  display: none;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  flex-shrink: 0;
+}
+
+.userEmail {
+  font-size: 13px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.sidebarLogout {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 12px 14px;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.collapsed .sidebarLogout {
+  padding: 12px;
+  justify-content: center;
+}
+
+.collapsed .sidebarLogout span {
+  display: none;
+}
+
+.sidebarLogout:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.sidebarLogout svg {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
