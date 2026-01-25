@@ -183,36 +183,29 @@ function ClipCard({ clip, onSaveToggle }) {
             </div>
 
             <div className="clip-card-body">
-                <h3 className="clip-title" style={{ fontSize: '25px', marginBottom: '12px', fontWeight: '600' }}>{clip.title}</h3>
+                <h3 className="clip-title">{clip.title}</h3>
 
-                <div className="clip-meta" style={{ marginBottom: '10px' }}>
+                <div className="clip-meta">
                     <span className="badge badge-category">{clip.category}</span>
                     {clip.suggestedLength && (
                         <span className="badge badge-category">{clip.suggestedLength}</span>
                     )}
                 </div>
 
-                <p className="clip-summary" style={{ fontSize: '15px', color: 'var(--text-primary)', lineHeight: '1.6' }}>{clip.summary}</p>
+                <p className="clip-summary">{clip.summary}</p>
 
                 {clip.keyLine && (
-                    <div className="clip-keyline" style={{
-                        fontSize: '15px',
-                        color: 'var(--accent)',
-                        padding: '12px 16px',
-                        background: 'rgba(255,255,255,0.03)',
-                        borderLeft: '3px solid var(--accent)',
-                        borderRadius: '4px'
-                    }}>
+                    <div className="clip-keyline">
                         "{clip.keyLine}"
                     </div>
                 )}
 
                 {clip.suggestedTitles && clip.suggestedTitles.length > 0 && (
                     <div className="clip-titles">
-                        <strong style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Suggested Titles:</strong>
-                        <ul style={{ margin: '8px 0 0 0', padding: '0 0 0 16px', listStyle: 'disc' }}>
+                        <strong>Suggested Titles:</strong>
+                        <ul>
                             {clip.suggestedTitles.map((title, i) => (
-                                <li key={i} style={{ fontSize: '13px', color: 'var(--accent)', marginBottom: '4px' }}>
+                                <li key={i}>
                                     "{title}"
                                 </li>
                             ))}
@@ -239,7 +232,7 @@ function ClipCard({ clip, onSaveToggle }) {
                             </div>
                         )}
                     </div>
-                    <div style={{ display: 'flex', gap: '12px' }}>
+                    <div className="clip-input-row">
                         <input
                             id={`top-${clip._id}`}
                             type="text"

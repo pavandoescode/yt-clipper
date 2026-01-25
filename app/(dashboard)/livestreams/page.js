@@ -177,113 +177,69 @@ export default function LiveStreamsPage() {
 
     return (
         <>
-            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
+            <div className="responsive-header">
+                <div className="header-content">
                     <h1>Live Streams</h1>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Streams from @ezLiveOfficial • {totalAll} streams</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{
-                                display: 'flex',
-                                background: 'rgba(255,255,255,0.05)',
-                                borderRadius: '8px',
-                                padding: '3px',
-                                gap: '2px',
-                                border: '1px solid var(--border)'
-                            }}>
-                                <button
-                                    onClick={() => setShowDone(false)}
-                                    style={{
-                                        padding: '8px 16px',
-                                        borderRadius: '6px',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '500',
-                                        background: !showDone ? 'var(--accent)' : 'transparent',
-                                        color: !showDone ? '#000000' : 'var(--text-muted)',
-                                        transition: 'all 0.15s ease'
-                                    }}
-                                >
-                                    Pending
-                                </button>
-                                <button
-                                    onClick={() => setShowDone(true)}
-                                    style={{
-                                        padding: '8px 16px',
-                                        borderRadius: '6px',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '500',
-                                        background: showDone ? 'var(--accent)' : 'transparent',
-                                        color: showDone ? '#000000' : 'var(--text-muted)',
-                                        transition: 'all 0.15s ease'
-                                    }}
-                                >
-                                    Done
-                                </button>
-                            </div>
-                            <div style={{
-                                display: 'flex',
-                                background: 'var(--bg-secondary)',
-                                borderRadius: '8px',
-                                padding: '4px',
-                                gap: '2px',
-                                border: '1px solid var(--border)'
-                            }}>
-                                <button
-                                    onClick={() => setSortOrder('old')}
-                                    style={{
-                                        padding: '8px 16px',
-                                        borderRadius: '6px',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '500',
-                                        background: sortOrder === 'old' ? 'var(--accent)' : 'transparent',
-                                        color: sortOrder === 'old' ? '#000000' : 'var(--text-muted)',
-                                        transition: 'all 0.15s ease'
-                                    }}
-                                >
-                                    Old to New
-                                </button>
-                                <button
-                                    onClick={() => setSortOrder('new')}
-                                    style={{
-                                        padding: '8px 16px',
-                                        borderRadius: '6px',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '500',
-                                        background: sortOrder === 'new' ? 'var(--accent)' : 'transparent',
-                                        color: sortOrder === 'new' ? '#000000' : 'var(--text-muted)',
-                                        transition: 'all 0.15s ease'
-                                    }}
-                                >
-                                    New to Old
-                                </button>
-                            </div>
+                    <p className="header-subtitle">Streams from @ezLiveOfficial • {totalAll} streams</p>
+
+                    <div className="controls-row">
+                        <div className="filter-group">
+                            <button
+                                onClick={() => setShowDone(false)}
+                                className="filter-btn"
+                                style={{
+                                    background: !showDone ? 'var(--accent)' : 'transparent',
+                                    color: !showDone ? '#000000' : 'var(--text-muted)'
+                                }}
+                            >
+                                Pending
+                            </button>
+                            <button
+                                onClick={() => setShowDone(true)}
+                                className="filter-btn"
+                                style={{
+                                    background: showDone ? 'var(--accent)' : 'transparent',
+                                    color: showDone ? '#000000' : 'var(--text-muted)'
+                                }}
+                            >
+                                Done
+                            </button>
+                        </div>
+
+                        <div className="filter-group">
+                            <button
+                                onClick={() => setSortOrder('old')}
+                                className="filter-btn"
+                                style={{
+                                    background: sortOrder === 'old' ? 'var(--accent)' : 'transparent',
+                                    color: sortOrder === 'old' ? '#000000' : 'var(--text-muted)'
+                                }}
+                            >
+                                Old to New
+                            </button>
+                            <button
+                                onClick={() => setSortOrder('new')}
+                                className="filter-btn"
+                                style={{
+                                    background: sortOrder === 'new' ? 'var(--accent)' : 'transparent',
+                                    color: sortOrder === 'new' ? '#000000' : 'var(--text-muted)'
+                                }}
+                            >
+                                New to Old
+                            </button>
                         </div>
                     </div>
                 </div>
+
                 <button
                     className="btn btn-primary"
                     onClick={handleFetchNew}
                     disabled={fetching}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    style={{ alignSelf: 'flex-start' }}
                 >
                     {fetching ? (
                         <>
-                            <span style={{
-                                width: '16px',
-                                height: '16px',
-                                border: '2px solid rgba(255,255,255,0.3)',
-                                borderTopColor: 'white',
-                                borderRadius: '50%',
-                                animation: 'spin 0.8s linear infinite'
-                            }}></span>
+                            <span className="loading-spinner" style={{ width: '16px', height: '16px', borderTopColor: 'black' }}></span>
                             Fetching...
                         </>
                     ) : (

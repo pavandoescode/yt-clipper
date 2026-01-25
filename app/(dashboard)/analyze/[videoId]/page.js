@@ -248,28 +248,19 @@ Analyze the video now and return the JSON:`;
     return (
         <>
             {/* Top bar */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '20px',
-                padding: '12px 16px',
-                background: 'var(--bg-secondary)',
-                borderRadius: '8px',
-                border: '1px solid var(--border)'
-            }}>
+            {/* Top bar */}
+            <div className="url-toolbar">
                 <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: 'var(--text-muted)', fontSize: '13px', textDecoration: 'none' }}
+                    className="url-link"
                 >
                     {url}
                 </a>
                 <button
-                    className="btn btn-primary"
+                    className="btn btn-primary mark-done-btn"
                     onClick={handleMarkDone}
-                    style={{ padding: '8px 16px', fontSize: '13px' }}
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="20 6 9 17 4 12"></polyline>

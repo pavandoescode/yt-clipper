@@ -1,0 +1,46 @@
+/* 1. Mobile Styles (Base) */
+.mainContent {
+    flex: 1;
+    margin-left: 0;
+    /* No margin on mobile (sidebar is overlay) */
+    padding: 1rem;
+    padding-top: calc(var(--header-height) + 1rem);
+    /* Space for fixed header */
+    width: 100%;
+    max-width: 100%;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. Tablet Adjustments */
+@media (min-width: 768px) {
+    .mainContent {
+        padding: 1.5rem;
+        padding-top: calc(var(--header-height) + 1.5rem);
+    }
+}
+
+/* 3. Desktop Layout */
+@media (min-width: 1024px) {
+    .mainContent {
+        margin-left: var(--sidebar-width, 260px);
+        /* Push content when sidebar is visible */
+        padding: 2rem 2.5rem;
+        padding-top: calc(var(--header-height) + 2rem);
+        max-width: 1400px;
+    }
+
+    /* When desktop sidebar is collapsed (mini mode) */
+    .mainContent.collapsed {
+        margin-left: 72px;
+        /* Mini sidebar width */
+        max-width: calc(100vw - 72px);
+        align-items: center;
+    }
+
+    .mainContent.collapsed>* {
+        width: 100%;
+        max-width: 1100px;
+    }
+}
