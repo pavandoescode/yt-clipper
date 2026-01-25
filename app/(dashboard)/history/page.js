@@ -31,7 +31,7 @@ export default function HistoryPage() {
             const response = await axios.get(`${API_URL}/clips/history`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setLivestreams(response.data.livestreams);
+            setLivestreams(response.data.data.livestreams);
         } catch (error) {
             console.error('Fetch error:', error);
         }

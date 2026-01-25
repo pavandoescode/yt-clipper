@@ -39,12 +39,14 @@ export async function POST(request) {
             const playlistResponse = await fetch(playlistUrl);
             const playlistData = await playlistResponse.json();
 
-            if (playlistData.items) {
+            if (playlistData.items && playlistData.items.length > 0) {
+                const videoIds = playlistData.items.map(v => v.snippet.resourceId.videoId);
+                const existingStreams = await ChannelStream.find({ videoId: { $in: videoIds } }).select('videoId').lean();
+                const existingSet = new Set(existingStreams.map(s => s.videoId));
+
                 for (const video of playlistData.items) {
                     const videoId = video.snippet.resourceId.videoId;
-                    const existing = await ChannelStream.findOne({ videoId });
-
-                    if (existing) {
+                    if (existingSet.has(videoId)) {
                         foundExisting = true;
                         break;
                     }
@@ -82,12 +84,11 @@ export async function POST(request) {
         }
 
         // Save new videos
-        let newCount = 0;
-        for (const video of allNewVideos) {
+        const newStreams = allNewVideos.map(video => {
             const videoId = video.snippet.resourceId.videoId;
             const details = detailsMap[videoId] || {};
 
-            await ChannelStream.create({
+            return {
                 videoId,
                 title: video.snippet.title,
                 thumbnail: video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url,
@@ -96,9 +97,14 @@ export async function POST(request) {
                 publishedAt: new Date(video.snippet.publishedAt),
                 duration: details.duration,
                 viewCount: details.viewCount
-            });
-            newCount++;
+            };
+        });
+
+        if (newStreams.length > 0) {
+            await ChannelStream.insertMany(newStreams);
         }
+
+        const newCount = newStreams.length;
 
         const totalStreams = await ChannelStream.countDocuments();
         return NextResponse.json({

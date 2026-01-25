@@ -9,6 +9,12 @@ const livestreamSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    videoId: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    },
     title: {
         type: String,
         default: 'Untitled Livestream'

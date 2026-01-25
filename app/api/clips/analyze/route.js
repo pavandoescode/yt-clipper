@@ -63,14 +63,20 @@ export async function POST(request) {
         // Create livestream record
         const livestream = new Livestream({
             url: cleanUrl,
+            videoId,
             status: 'analyzing',
             thumbnail,
             videoTitle
         });
         await livestream.save();
 
-        // Analyze with Gemini
-        const result = await analyzeVideo(url);
+        // Analyze with Gemini with timeout
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Analysis timed out')), 300000) // 5 minute timeout
+        );
+
+        const analyzePromise = analyzeVideo(url);
+        const result = await Promise.race([analyzePromise, timeoutPromise]);
 
         if (!result.success) {
             livestream.status = 'failed';

@@ -31,18 +31,32 @@ export async function GET(request) {
             .lean();
 
         // Get clip counts for each stream
-        const streamsWithClips = await Promise.all(streams.map(async (stream) => {
-            const livestreams = await Livestream.find({
-                url: { $regex: stream.videoId }
-            }).lean();
+        // Efficiently get clip counts using the new videoId field
+        const videoIds = streams.map(s => s.videoId);
+        const livestreams = await Livestream.find({ videoId: { $in: videoIds } }).select('_id videoId').lean();
 
-            let clipCount = 0;
-            if (livestreams.length > 0) {
-                const livestreamIds = livestreams.map(ls => ls._id);
-                clipCount = await Clip.countDocuments({ livestreamId: { $in: livestreamIds } });
+        const livestreamIds = livestreams.map(ls => ls._id);
+        const clipCounts = await Clip.aggregate([
+            { $match: { livestreamId: { $in: livestreamIds } } },
+            { $group: { _id: '$livestreamId', count: { $sum: 1 } } }
+        ]);
+
+        const clipCountMap = {};
+        clipCounts.forEach(c => {
+            clipCountMap[c._id.toString()] = c.count;
+        });
+
+        const videoToClipCount = {};
+        livestreams.forEach(ls => {
+            const count = clipCountMap[ls._id.toString()];
+            if (count) {
+                videoToClipCount[ls.videoId] = (videoToClipCount[ls.videoId] || 0) + count;
             }
+        });
 
-            return { ...stream, clipCount };
+        const streamsWithClips = streams.map(stream => ({
+            ...stream,
+            clipCount: videoToClipCount[stream.videoId] || 0
         }));
 
         return NextResponse.json({

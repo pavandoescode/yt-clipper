@@ -9,21 +9,34 @@ export async function GET(request, { params }) {
         await connectDB();
         const auth = await verifyAuth(request);
         if (!auth) {
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json({
+                success: false,
+                error: { code: 'UNAUTHORIZED', message: 'Unauthorized access' }
+            }, { status: 401 });
         }
 
         const { id } = await params;
         const livestream = await Livestream.findOne({ _id: id });
 
         if (!livestream) {
-            return NextResponse.json({ message: 'Livestream not found' }, { status: 404 });
+            return NextResponse.json({
+                success: false,
+                error: { code: 'RESOURCE_NOT_FOUND', message: 'Livestream not found' }
+            }, { status: 404 });
         }
 
         const clips = await Clip.find({ livestreamId: livestream._id });
 
-        return NextResponse.json({ livestream, clips });
+        return NextResponse.json({
+            success: true,
+            data: { livestream, clips }
+        });
     } catch (error) {
-        return NextResponse.json({ message: 'Server error' }, { status: 500 });
+        console.error('API Error:', error);
+        return NextResponse.json({
+            success: false,
+            error: { code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' }
+        }, { status: 500 });
     }
 }
 
@@ -32,14 +45,20 @@ export async function DELETE(request, { params }) {
         await connectDB();
         const auth = await verifyAuth(request);
         if (!auth) {
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json({
+                success: false,
+                error: { code: 'UNAUTHORIZED', message: 'Unauthorized access' }
+            }, { status: 401 });
         }
 
         const { id } = await params;
         const livestream = await Livestream.findOne({ _id: id });
 
         if (!livestream) {
-            return NextResponse.json({ message: 'Livestream not found' }, { status: 404 });
+            return NextResponse.json({
+                success: false,
+                error: { code: 'RESOURCE_NOT_FOUND', message: 'Livestream not found' }
+            }, { status: 404 });
         }
 
         // Delete all associated clips
@@ -48,8 +67,15 @@ export async function DELETE(request, { params }) {
         // Delete the livestream
         await Livestream.deleteOne({ _id: livestream._id });
 
-        return NextResponse.json({ message: 'Livestream and all clips deleted successfully' });
+        return NextResponse.json({
+            success: true,
+            message: 'Livestream and all clips deleted successfully'
+        });
     } catch (error) {
-        return NextResponse.json({ message: 'Server error' }, { status: 500 });
+        console.error('API Delete Error:', error);
+        return NextResponse.json({
+            success: false,
+            error: { code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' }
+        }, { status: 500 });
     }
 }

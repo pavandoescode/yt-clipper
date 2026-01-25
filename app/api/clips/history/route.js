@@ -11,11 +11,26 @@ export async function GET(request) {
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
-        const livestreams = await Livestream.find({}).sort({ createdAt: -1 });
+        const livestreams = await Livestream.find({}).sort({ createdAt: -1 }).lean();
 
-        return NextResponse.json({ livestreams });
+        // Serialize fields ensuring everything is a string/primitive
+        const serializedLivestreams = livestreams.map(stream => ({
+            ...stream,
+            _id: stream._id.toString(),
+            userId: stream.userId ? stream.userId.toString() : null,
+            createdAt: stream.createdAt?.toISOString(),
+            updatedAt: stream.updatedAt?.toISOString(),
+        }));
+
+        return NextResponse.json({
+            success: true,
+            data: { livestreams: serializedLivestreams }
+        });
     } catch (error) {
         console.error('History error:', error);
-        return NextResponse.json({ message: 'Server error' }, { status: 500 });
+        return NextResponse.json({
+            success: false,
+            error: { code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' }
+        }, { status: 500 });
     }
 }
