@@ -9,6 +9,7 @@ import Clip from '@/models/Clip';
 import StreamList from '@/components/StreamList'; // We'll extract the UI to a component
 
 export default async function ClipsPage() {
+
     await connectDB();
 
     // Strategy: Find streams that have clips. 
