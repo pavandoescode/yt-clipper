@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import connectDB from '@/lib/db';
+
+export const dynamic = 'force-dynamic';
+
 import ChannelStream from '@/models/ChannelStream';
 import Livestream from '@/models/Livestream';
 import Clip from '@/models/Clip';

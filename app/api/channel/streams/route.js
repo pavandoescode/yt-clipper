@@ -5,6 +5,8 @@ import Livestream from '@/models/Livestream';
 import Clip from '@/models/Clip';
 import connectDB from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
     try {
         await connectDB();

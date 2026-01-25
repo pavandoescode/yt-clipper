@@ -3,6 +3,8 @@ import { verifyAuth } from '@/lib/auth';
 import Livestream from '@/models/Livestream';
 import connectDB from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
     try {
         await connectDB();
