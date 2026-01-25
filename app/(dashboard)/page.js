@@ -20,8 +20,11 @@ export default async function ClipsPage() {
     const clipCountMap = {};
     clipsAgg.forEach(c => clipCountMap[c._id.toString()] = c.count);
 
-    // 2. Get the Livestreams
-    const livestreams = await Livestream.find({ _id: { $in: livestreamIds } }).lean();
+    // 2. Get the Livestreams (exclude done)
+    const livestreams = await Livestream.find({
+        _id: { $in: livestreamIds },
+        isDone: { $ne: true }
+    }).lean();
 
     // 3. Get the ChannelStreams to get rich metadata (views, duration)
     const videoIds = livestreams.map(ls => ls.videoId);
@@ -39,13 +42,16 @@ export default async function ClipsPage() {
             videoId: ls.videoId,
             title: cs.title || ls.videoTitle || ls.title,
             thumbnail: cs.thumbnail || ls.thumbnail,
-            publishedAt: cs.publishedAt ? cs.publishedAt.toISOString() : (ls.updatedAt || new Date()).toISOString(),
+            publishedAt: cs.publishedAt ? cs.publishedAt.toISOString() : (ls.videoUploadDate || (ls.createdAt ? ls.createdAt.toISOString() : new Date().toISOString())),
             duration: cs.duration,
             viewCount: cs.viewCount,
             clipCount: clipCountMap[ls._id.toString()] || 0,
-            isLivestreamDoc: true // Marker
+            isLivestreamDoc: true, // Marker
+            isDone: cs.isDone || ls.isDone // Check both
         };
-    }).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    })
+        .filter(s => !s.isDone) // Final filter
+        .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
     return (
         <>

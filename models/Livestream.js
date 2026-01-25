@@ -35,6 +35,10 @@ const livestreamSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'analyzing', 'completed', 'failed'],
         default: 'pending'
+    },
+    isDone: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true
