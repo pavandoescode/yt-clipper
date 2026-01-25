@@ -42,7 +42,8 @@ export async function POST(request) {
             url: cleanUrl,
             status: 'completed',
             thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-            videoTitle
+            videoTitle,
+            videoId
         });
         await livestream.save();
 

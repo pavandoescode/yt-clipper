@@ -88,7 +88,7 @@ export default function StreamList({ initialStreams }) {
             <div className="streams-grid">
                 {visibleStreams.map((stream) => (
                     <div
-                        key={stream._id}
+                        key={stream.livestreamId}
                         className="stream-card"
                         onClick={() => handleViewClips(stream.livestreamId)}
                         style={{ cursor: 'pointer' }}
