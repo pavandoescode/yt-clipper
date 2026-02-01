@@ -16,6 +16,10 @@ export default async function LivestreamDetailsPage({ params }) {
     }
 
     const clipsDocs = await Clip.find({ livestreamId: id }).sort({ clipNumber: 1 }).lean();
+    console.log(`[DEBUG] Fetched ${clipsDocs.length} clips for ${id}`);
+    if (clipsDocs.length > 0) {
+        console.log('[DEBUG] First clip:', JSON.stringify(clipsDocs[0], null, 2));
+    }
 
     // Serialization helper
     const serialize = (doc) => {

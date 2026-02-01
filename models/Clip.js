@@ -11,7 +11,7 @@ const clipSchema = new mongoose.Schema({
         ref: 'User'
     },
     clipNumber: {
-        type: Number,
+        type: String,
         required: true
     },
     title: {
@@ -69,6 +69,9 @@ const clipSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Prevent overwrite on hot reload
+// Prevent overwrite on hot reload, but allow it for development schema changes
+if (process.env.NODE_ENV !== 'production') {
+    delete mongoose.models.Clip;
+}
 const Clip = mongoose.models.Clip || mongoose.model('Clip', clipSchema);
 export default Clip;

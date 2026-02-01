@@ -150,11 +150,34 @@ function ClipCard({ clip, onSaveToggle }) {
         }
     };
 
+    const [idCopied, setIdCopied] = useState(false);
+
+    const handleIdCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(clip.clipNumber);
+            setIdCopied(true);
+            setTimeout(() => setIdCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy ID:', err);
+        }
+    };
+
     return (
         <div className="clip-card">
             <div className="clip-card-header">
                 <div className="clip-header-left">
-                    <span className="clip-number">Clip #{clip.clipNumber}</span>
+                    <span
+                        className="clip-number"
+                        onClick={handleIdCopy}
+                        title="Click to copy ID"
+                        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                        {idCopied ? (
+                            <span style={{ color: '#22c55e' }}>Copied!</span>
+                        ) : (
+                            <>Clip #{clip.clipNumber}</>
+                        )}
+                    </span>
                 </div>
                 <div className="clip-header-right">
                     <span className="clip-timestamp">

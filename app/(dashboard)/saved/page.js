@@ -54,9 +54,60 @@ export default function SavedClipsPage() {
         }
     };
 
+    const [searchQuery, setSearchQuery] = useState('');
+    const [serverClips, setServerClips] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (searchQuery.trim().length > 2) {
+                setIsSearching(true);
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await axios.get(`${API_URL}/clips/search?q=${searchQuery.trim()}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setServerClips(response.data.clips || []);
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+                setIsSearching(false);
+            } else {
+                setServerClips([]);
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Combine local saved clips (filtered) with server search results
+    // Use a Map to deduplicate by ID, prioritizing local (saved) state if existent
+    const combinedClips = (() => {
+        const results = new Map();
+
+        // 1. Add filtered local clips
+        clips.forEach(clip => {
+            if (!searchQuery || (clip.clipNumber || '').toLowerCase().includes(searchQuery.toLowerCase())) {
+                results.set(clip._id, clip);
+            }
+        });
+
+        // 2. Add server results (only if searching)
+        if (searchQuery) {
+            serverClips.forEach(clip => {
+                if (!results.has(clip._id)) {
+                    results.set(clip._id, clip);
+                }
+            });
+        }
+
+        return Array.from(results.values());
+    })();
+
     // Group clips by livestreamId
-    const groupedClips = clips.reduce((acc, clip) => {
-        // Handle cases where livestreamId might be missing or populated incorrectly
+    const groupedClips = combinedClips.reduce((acc, clip) => {
+        // ... (existing reduce logic)
         const ls = clip.livestreamId || { _id: 'unknown', videoTitle: 'Unknown Source', title: 'Unknown Source', url: '' };
         const id = ls._id || 'unknown';
         const title = ls.videoTitle || ls.title || 'Unknown Source';
@@ -76,16 +127,65 @@ export default function SavedClipsPage() {
 
     // Sort groups by most recent clip
     const sortedGroups = Object.values(groupedClips).sort((a, b) => {
-        const dateA = new Date(a.clips[0].createdAt);
-        const dateB = new Date(b.clips[0].createdAt);
+        const dateA = new Date(a.clips[0].createdAt || Date.now());
+        const dateB = new Date(b.clips[0].createdAt || Date.now());
         return dateB - dateA;
     });
+
+    const handleSaveFromSearch = (clipId) => {
+        // If un-saving a clip that was only found via search (and not in 'clips'), 
+        // we might want to keep it visible but mark as unsaved.
+        // If saving a clip found via search, we add it to 'clips'.
+
+        // Optimistic update: toggle logic
+        // But since we have two sources (clips and serverClips), we just need to refresh or handle locally.
+        // Simplest: re-fetch saved matched clips or just let the mutation happen.
+        // The component re-renders. If it was in 'clips', handleSaveToggle removed it.
+        // But if we are searching, we still want to see it.
+
+        // We need to update the 'clips' state to reflect the change if we want it to persist/unpersist in the UI
+        // WITHOUT making it disappear if it's the result of a search.
+
+        setClips(prev => {
+            const exists = prev.find(c => c._id === clipId);
+            if (exists) {
+                // Removing from saved
+                return prev.filter(c => c._id !== clipId);
+            } else {
+                // Adding to saved (match from serverClips)
+                const clip = serverClips.find(c => c._id === clipId);
+                if (clip) return [...prev, { ...clip, isSaved: true }];
+                return prev;
+            }
+        });
+
+        // Also update serverClips state to reflect isSaved toggle so UI updates immediately
+        setServerClips(prev => prev.map(c =>
+            c._id === clipId ? { ...c, isSaved: !c.isSaved } : c
+        ));
+    };
 
     return (
         <>
             <div className="page-header">
-                <h1>Saved Clips</h1>
-                <p>Your collection of saved clips</p>
+                <div>
+                    <h1>Saved Clips</h1>
+                    <p>Your collection of saved clips (and global search)</p>
+                </div>
+                <div style={{ marginTop: '16px', position: 'relative' }}>
+                    <input
+                        type="text"
+                        placeholder="Search all clips by ID..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="search-input"
+                    />
+                    {isSearching && (
+                        <div style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)' }}>
+                            <div className="loading-spinner" style={{ width: '16px', height: '16px' }}></div>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {loading ? (
@@ -165,7 +265,7 @@ export default function SavedClipsPage() {
                                                         isSaved: true,
                                                         videoUrl: clip.videoUrl || group.url
                                                     }}
-                                                    onSaveToggle={handleSaveToggle}
+                                                    onSaveToggle={handleSaveFromSearch}
                                                 />
                                             ))}
                                         </div>
@@ -265,6 +365,23 @@ export default function SavedClipsPage() {
                 .btn-icon:hover {
                     background: var(--bg-active);
                     color: var(--text-primary);
+                }
+
+                .search-input {
+                    background: var(--bg-secondary);
+                    border: 1px solid var(--border);
+                    color: var(--text-primary);
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    width: 100%;
+                    max-width: 300px;
+                    font-size: 14px;
+                    outline: none;
+                    transition: border-color 0.2s;
+                }
+
+                .search-input:focus {
+                    border-color: var(--accent);
                 }
             `}</style>
         </>

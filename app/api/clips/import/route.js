@@ -1,8 +1,11 @@
+
 import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
 import Livestream from '@/models/Livestream';
 import Clip from '@/models/Clip';
 import connectDB from '@/lib/db';
+import mongoose from 'mongoose';
+import { nanoid } from 'nanoid';
 
 export async function POST(request) {
     try {
@@ -49,11 +52,15 @@ export async function POST(request) {
 
         // Save clips
         const savedClips = [];
+
         for (let i = 0; i < clips.length; i++) {
             const clip = clips[i];
+            const newId = new mongoose.Types.ObjectId();
+
             const newClip = new Clip({
+                _id: newId,
                 livestreamId: livestream._id,
-                clipNumber: clip.clipNumber || (i + 1),
+                clipNumber: nanoid(10),
                 title: clip.title || `Clip ${i + 1}`,
                 timestampStart: clip.timestampStart || '00:00:00',
                 timestampEnd: clip.timestampEnd || '00:00:30',

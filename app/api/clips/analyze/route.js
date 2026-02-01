@@ -4,6 +4,8 @@ import Livestream from '@/models/Livestream';
 import Clip from '@/models/Clip';
 import { analyzeVideo } from '@/lib/gemini';
 import connectDB from '@/lib/db';
+import mongoose from 'mongoose';
+import { nanoid } from 'nanoid';
 
 function extractVideoId(url) {
     const patterns = [
@@ -50,7 +52,7 @@ export async function POST(request) {
         // Fetch video title from YouTube oEmbed API
         let videoTitle = '';
         try {
-            const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+            const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(cleanUrl)}&format=json`;
             const oEmbedResponse = await fetch(oEmbedUrl);
             if (oEmbedResponse.ok) {
                 const oEmbedData = await oEmbedResponse.json();
@@ -86,10 +88,14 @@ export async function POST(request) {
 
         // Save individual clips
         const savedClips = [];
+
         for (const clip of result.data.individualClips) {
+            const newId = new mongoose.Types.ObjectId();
+
             const newClip = new Clip({
+                _id: newId,
                 livestreamId: livestream._id,
-                clipNumber: clip.clipNumber,
+                clipNumber: nanoid(10),
                 title: clip.title,
                 timestampStart: clip.timestampStart,
                 timestampEnd: clip.timestampEnd,
