@@ -10,7 +10,22 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export default function LivestreamClipsList({ initialLivestream, initialClips, livestreamId }) {
     const router = useRouter();
-    const [clips, setClips] = useState(initialClips || []);
+    const timestampToSeconds = (ts) => {
+        if (!ts) return 0;
+        const parts = ts.split(':').map(Number);
+        if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        if (parts.length === 2) return parts[0] * 60 + parts[1];
+        return parts[0] || 0;
+    };
+
+    const [clips, setClips] = useState(() => {
+        const sorted = [...(initialClips || [])].sort((a, b) => {
+            const durationA = timestampToSeconds(a.timestampEnd) - timestampToSeconds(a.timestampStart);
+            const durationB = timestampToSeconds(b.timestampEnd) - timestampToSeconds(b.timestampStart);
+            return durationB - durationA; // Longest first
+        });
+        return sorted;
+    });
     const [deleting, setDeleting] = useState(false);
     const [markingDone, setMarkingDone] = useState(false);
 
