@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
 import ChannelStream from '@/models/ChannelStream';
+import Livestream from '@/models/Livestream';
 import connectDB from '@/lib/db';
 
 export async function PATCH(request, { params }) {
