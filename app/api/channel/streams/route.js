@@ -19,9 +19,25 @@ export async function GET(request) {
         const page = parseInt(searchParams.get('page')) || 1;
         const limit = parseInt(searchParams.get('limit')) || 9;
         const showDone = searchParams.get('showDone') === 'true';
+        const hasClips = searchParams.get('hasClips') === 'true';
         const sortOrder = searchParams.get('sortOrder') === 'new' ? -1 : 1;
 
-        const filter = showDone ? { isDone: true } : { $or: [{ isDone: false }, { isDone: { $exists: false } }, { isDone: null }] };
+        let filter = showDone ? { isDone: true } : { $or: [{ isDone: false }, { isDone: { $exists: false } }, { isDone: null }] };
+
+        if (hasClips) {
+            // Find clips to get livestream IDs
+            const distinctLivestreamIds = await Clip.distinct('livestreamId');
+
+            // Find livestreams with those IDs to get videoIds
+            const livestreamsWithClips = await Livestream.find({
+                _id: { $in: distinctLivestreamIds }
+            }).select('videoId').lean();
+
+            const videoIdsWithClips = livestreamsWithClips.map(ls => ls.videoId);
+
+            // Add to filter
+            filter.videoId = { $in: videoIdsWithClips };
+        }
         const total = await ChannelStream.countDocuments(filter);
         const totalDone = await ChannelStream.countDocuments({ isDone: true });
         const totalAll = await ChannelStream.countDocuments({});

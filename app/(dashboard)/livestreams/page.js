@@ -19,6 +19,7 @@ export default function LiveStreamsPage() {
     const [sortOrder, setSortOrder] = useState('old');
     const [markingDoneId, setMarkingDoneId] = useState(null);
     const [showDone, setShowDone] = useState(false);
+    const [hasClips, setHasClips] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [total, setTotal] = useState(0);
@@ -30,7 +31,7 @@ export default function LiveStreamsPage() {
         setStreams([]);
         setPage(1);
         fetchStreams(1, true);
-    }, [showDone, sortOrder]);
+    }, [showDone, sortOrder, hasClips]);
 
     const fetchStreams = async (pageNum = 1, reset = false) => {
         if (reset) setLoading(true);
@@ -38,7 +39,7 @@ export default function LiveStreamsPage() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`${API_URL}/channel/streams?page=${pageNum}&limit=9&showDone=${showDone}&sortOrder=${sortOrder}`, {
+            const response = await axios.get(`${API_URL}/channel/streams?page=${pageNum}&limit=9&showDone=${showDone}&sortOrder=${sortOrder}&hasClips=${hasClips}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = response.data;
@@ -109,7 +110,7 @@ export default function LiveStreamsPage() {
             // Fetch one replacement stream if more are available
             if (hasMore) {
                 const currentCount = streams.length - 1; // After removal
-                const response = await axios.get(`${API_URL}/channel/streams?page=1&limit=${currentCount + 1}&showDone=${showDone}&sortOrder=${sortOrder}`, {
+                const response = await axios.get(`${API_URL}/channel/streams?page=1&limit=${currentCount + 1}&showDone=${showDone}&sortOrder=${sortOrder}&hasClips=${hasClips}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = response.data;
@@ -136,7 +137,7 @@ export default function LiveStreamsPage() {
             // Remove from current done list
             setStreams(prev => prev.filter(s => s._id !== streamId));
             // Refetch to get updated counts
-            const response = await axios.get(`${API_URL}/channel/streams?page=1&limit=1&showDone=${showDone}&sortOrder=${sortOrder}`, {
+            const response = await axios.get(`${API_URL}/channel/streams?page=1&limit=1&showDone=${showDone}&sortOrder=${sortOrder}&hasClips=${hasClips}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = response.data;
@@ -204,6 +205,27 @@ export default function LiveStreamsPage() {
                                 }}
                             >
                                 Done
+                            </button>
+                        </div>
+
+                        <div className="filter-group">
+                            <button
+                                onClick={() => setHasClips(!hasClips)}
+                                className="filter-btn"
+                                style={{
+                                    background: hasClips ? 'var(--accent)' : 'transparent',
+                                    color: hasClips ? '#000000' : 'var(--text-muted)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                {hasClips ? (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                ) : null}
+                                Has Clips
                             </button>
                         </div>
 

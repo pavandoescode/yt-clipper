@@ -17,6 +17,13 @@ export async function PATCH(request, { params }) {
             { isDone: false },
             { new: true }
         );
+
+        if (stream && stream.videoId) {
+            await import('@/models/Livestream'); // Dynamic import to avoid circular dep if any, though likely fine at top
+            const Livestream = (await import('@/models/Livestream')).default;
+            await Livestream.updateOne({ videoId: stream.videoId }, { isDone: false });
+        }
+
         return NextResponse.json(stream);
     } catch (error) {
         return NextResponse.json({ message: 'Server error' }, { status: 500 });

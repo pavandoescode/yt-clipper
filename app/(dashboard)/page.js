@@ -55,7 +55,7 @@ export default async function ClipsPage() {
         };
     })
         .filter(s => !s.isDone) // Final filter
-        .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+        .sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
 
     return (
         <>
