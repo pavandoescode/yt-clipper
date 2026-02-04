@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
 import ChannelStream from '@/models/ChannelStream';
 import connectDB from '@/lib/db';
+import Livestream from '@/models/Livestream';
 
 export async function POST(request) {
     try {
@@ -83,6 +84,16 @@ export async function POST(request) {
             });
         }
 
+        // Check for existing Livestreams to sync isDone status
+        const newVideoIds = allNewVideos.map(v => v.snippet.resourceId.videoId);
+        const existingLivestreams = await Livestream.find({ videoId: { $in: newVideoIds } }).select('videoId isDone').lean();
+        const livestreamStatusMap = {};
+        existingLivestreams.forEach(ls => {
+            if (ls.isDone) {
+                livestreamStatusMap[ls.videoId] = true;
+            }
+        });
+
         // Save new videos
         const newStreams = allNewVideos.map(video => {
             const videoId = video.snippet.resourceId.videoId;
@@ -96,7 +107,8 @@ export async function POST(request) {
                 channelTitle: video.snippet.channelTitle,
                 publishedAt: new Date(video.snippet.publishedAt),
                 duration: details.duration,
-                viewCount: details.viewCount
+                viewCount: details.viewCount,
+                isDone: livestreamStatusMap[videoId] || false // Sync isDone status
             };
         });
 
