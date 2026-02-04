@@ -9,17 +9,26 @@ export default async function LivestreamDetailsPage({ params }) {
     const { id } = await params;
     await connectDB();
 
-    const livestreamDoc = await Livestream.findOne({ _id: id }).lean();
+    // 1. Fetch the requested livestream to get the videoId
+    const currentLivestream = await Livestream.findOne({ _id: id }).lean();
 
-    if (!livestreamDoc) {
+    if (!currentLivestream) {
         notFound();
     }
 
-    const clipsDocs = await Clip.find({ livestreamId: id }).sort({ clipNumber: 1 }).lean();
-    console.log(`[DEBUG] Fetched ${clipsDocs.length} clips for ${id}`);
-    if (clipsDocs.length > 0) {
-        console.log('[DEBUG] First clip:', JSON.stringify(clipsDocs[0], null, 2));
-    }
+    // 2. Find ALL livestreams with the same videoId (duplicates)
+    const videoId = currentLivestream.videoId;
+    const allSiblingStreams = await Livestream.find({ videoId }).select('_id').lean();
+    const allLivestreamIds = allSiblingStreams.map(s => s._id);
+
+    console.log(`[DEBUG] Found ${allLivestreamIds.length} streams for videoId ${videoId}`);
+
+    // 3. Fetch clips for ALL these livestreams
+    const clipsDocs = await Clip.find({ livestreamId: { $in: allLivestreamIds } })
+        .sort({ clipNumber: 1 }) // You might want to sort by sorting options or creation time if numbers overlap
+        .lean();
+
+    console.log(`[DEBUG] Fetched ${clipsDocs.length} aggregated clips`);
 
     // Serialization helper
     const serialize = (doc) => {
@@ -34,7 +43,7 @@ export default async function LivestreamDetailsPage({ params }) {
         };
     };
 
-    const serializedLivestream = serialize(livestreamDoc);
+    const serializedLivestream = serialize(currentLivestream);
     const serializedClips = clipsDocs.map(serialize);
 
     return (

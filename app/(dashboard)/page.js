@@ -38,23 +38,41 @@ export default async function ClipsPage() {
     channelStreams.forEach(cs => channelStreamMap[cs.videoId] = cs);
 
     // 4. Merge data
-    const streams = livestreams.map(ls => {
+    // 4. Merge data and Deduplicate by videoId
+    const streamsMap = new Map();
+
+    livestreams.forEach(ls => {
         const cs = channelStreamMap[ls.videoId] || {};
-        return {
-            _id: cs._id ? cs._id.toString() : ls._id.toString(), // Prefer ChannelStream ID if available for actions
-            livestreamId: ls._id.toString(), // Explicitly pass Livestream ID for navigation
-            videoId: ls.videoId,
-            title: cs.title || ls.videoTitle || ls.title,
-            thumbnail: cs.thumbnail || ls.thumbnail,
-            publishedAt: cs.publishedAt ? cs.publishedAt.toISOString() : (ls.videoUploadDate || (ls.createdAt ? ls.createdAt.toISOString() : new Date().toISOString())),
-            duration: cs.duration,
-            viewCount: cs.viewCount,
-            clipCount: clipCountMap[ls._id.toString()] || 0,
-            isLivestreamDoc: true, // Marker
-            isDone: cs.isDone || ls.isDone // Check both
-        };
-    })
-        .filter(s => !s.isDone) // Final filter
+        const count = clipCountMap[ls._id.toString()] || 0;
+        const publishedAt = cs.publishedAt ? cs.publishedAt.toISOString() : (ls.videoUploadDate || (ls.createdAt ? ls.createdAt.toISOString() : new Date().toISOString()));
+
+        if (streamsMap.has(ls.videoId)) {
+            const existing = streamsMap.get(ls.videoId);
+            existing.clipCount += count;
+            // If the current stream is marked as done, update the existing entry to be done
+            if (cs.isDone || ls.isDone) {
+                existing.isDone = true;
+            }
+            // Keep the most recent ID or metadata if needed, but usually they are identical for the same video
+        } else {
+            streamsMap.set(ls.videoId, {
+                _id: cs._id ? cs._id.toString() : ls._id.toString(),
+                livestreamId: ls._id.toString(),
+                videoId: ls.videoId,
+                title: cs.title || ls.videoTitle || ls.title,
+                thumbnail: cs.thumbnail || ls.thumbnail,
+                publishedAt: publishedAt,
+                duration: cs.duration,
+                viewCount: cs.viewCount,
+                clipCount: count,
+                isLivestreamDoc: true,
+                isDone: cs.isDone || ls.isDone
+            });
+        }
+    });
+
+    const streams = Array.from(streamsMap.values())
+        .filter(s => !s.isDone)
         .sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
 
     return (
