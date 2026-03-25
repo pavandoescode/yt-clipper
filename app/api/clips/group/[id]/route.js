@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
-import ChannelStream from '@/models/ChannelStream';
+import ClipGroup from '@/models/ClipGroup';
 import connectDB from '@/lib/db';
 
 export async function DELETE(request, { params }) {
@@ -12,9 +12,19 @@ export async function DELETE(request, { params }) {
         }
 
         const { id } = await params;
-        await ChannelStream.findByIdAndDelete(id);
-        return NextResponse.json({ message: 'Stream deleted' });
+        if (!id) {
+            return NextResponse.json({ message: 'Group ID required' }, { status: 400 });
+        }
+
+        const deletedGroup = await ClipGroup.findByIdAndDelete(id);
+        
+        if (!deletedGroup) {
+            return NextResponse.json({ message: 'Group not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: 'Group deleted successfully' });
     } catch (error) {
+        console.error('Delete group error:', error);
         return NextResponse.json({ message: 'Server error' }, { status: 500 });
     }
 }

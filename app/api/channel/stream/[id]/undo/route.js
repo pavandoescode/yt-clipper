@@ -11,7 +11,7 @@ export async function PATCH(request, { params }) {
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         const stream = await ChannelStream.findByIdAndUpdate(
             id,
             { isDone: false },
@@ -19,12 +19,15 @@ export async function PATCH(request, { params }) {
         );
 
         if (stream && stream.videoId) {
-            await import('@/models/Livestream'); // Dynamic import to avoid circular dep if any, though likely fine at top
             const Livestream = (await import('@/models/Livestream')).default;
             await Livestream.updateOne({ videoId: stream.videoId }, { isDone: false });
         }
 
-        return NextResponse.json(stream);
+        if (!stream) {
+            return NextResponse.json({ message: 'Stream not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true, data: stream });
     } catch (error) {
         return NextResponse.json({ message: 'Server error' }, { status: 500 });
     }
