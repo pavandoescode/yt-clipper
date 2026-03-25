@@ -67,9 +67,9 @@ export async function POST(request) {
                 category: clip.category || 'Uncategorized',
                 summary: clip.summary || '',
                 keyLine: clip.keyLine || '',
-                whyItWorks: clip.whyItWorks || '',
-                suggestedLength: clip.suggestedLength || '',
-                suggestedTitles: clip.suggestedTitles || []
+                suggestedLengthSeconds: clip.suggestedLengthSeconds || 0,
+                suggestedTitles: clip.suggestedTitles || [],
+                thumbnailText: clip.thumbnailText || ''
             });
             await newClip.save();
             savedClips.push(newClip);

@@ -13,7 +13,7 @@ export async function PATCH(request, props) {
         }
 
         const { id } = params;
-        const { customTitle, thumbnailTopText, thumbnailMainText } = await request.json();
+        const { customTitle, thumbnailText } = await request.json();
 
         const clip = await Clip.findById(id);
 
@@ -22,8 +22,7 @@ export async function PATCH(request, props) {
         }
 
         if (customTitle !== undefined) clip.customTitle = customTitle;
-        if (thumbnailTopText !== undefined) clip.thumbnailTopText = thumbnailTopText;
-        if (thumbnailMainText !== undefined) clip.thumbnailMainText = thumbnailMainText;
+        if (thumbnailText !== undefined) clip.thumbnailText = thumbnailText;
 
         await clip.save();
 

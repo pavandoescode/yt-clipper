@@ -26,8 +26,12 @@ export default function AnalyzePage() {
     const [importError, setImportError] = useState('');
 
     // AI Studio prompt
-    const AI_STUDIO_PROMPT = `Analyze the livestream video at this link: ${url}
 
+    const AI_STUDIO_PROMPT = `Analyze this live stream and extract video clips that are strictly longer than 60 seconds. Do not extract short clips. Look for moments where the speaker delivers 'hard truths' about the tech industry, money, or careers. Prioritize segments featuring high-energy motivation, discussions on self-respect, or personal 'story time' anecdotes that end with a valuable lesson. Specifically, flag conversations around FAANG interviews, AI's impact on developers, resume building, and raw mindset advice regarding success and relationships.
+
+Watch the video
+
+${url}
 **OUTPUT FORMAT: Return ONLY valid JSON, no other text:**
 
 {
@@ -41,57 +45,11 @@ export default function AnalyzePage() {
       "category": "Hard Truth / Brutal Honesty",
       "summary": "Brief description of what happens in this moment",
       "keyLine": "The exact powerful quote from this moment",
-      "suggestedLength": "20-40 seconds",
+      "suggestedLengthSeconds": 20,
       "suggestedTitles": ["Title Option 1", "Title Option 2"]
     }
   ]
-}
-
-Identify moments that match the emotional style, tone, and themes that historically perform well on my clips channel.
-
-WHAT MY AUDIENCE LIKES (INFERRED FROM BEST-PERFORMING TITLES)
-Based on past viral videos, my audience strongly engages with clips that fall into these emotion-driven categories:
-
-1. Hard Truth / Brutal Honesty
-Direct, blunt statements that challenge comfort.
-Examples: calling out excuses, discipline over feelings, confronting laziness, uncomfortable truths
-
-2. Emotional Vulnerability / Pain Points
-Moments showing struggle, frustration, or emotional honesty.
-Examples: "I'm tired but still pushing", loneliness, doubt, FOMO, being left behind while others succeed
-
-3. High-Energy Motivation
-Clips with fire, intensity, or hype-creating lines.
-Examples: consistency > motivation, no rest, no shortcuts, relentless self-improvement
-
-4. Story Time With a Lesson
-Short stories with a clear takeaway.
-Examples: lessons from failure, moments that shaped mindset
-
-5. Self-Respect / Boundaries
-Strong messages about personal value and cutting toxicity.
-Examples: respecting your time
-
-6. Hopeful Motivational Push
-Encouragement mixed with emotional intensity.
-Examples: "You're the last hope", "Best version of yourself", "Confusion is Just Laziness- start working hard now"
-
-YOUR JOB:
-Use these categories to identify both:
-A) Similar clips - Moments that match the patterns above
-B) New clip opportunities - Moments that weren't in past titles but fit what the audience would love next
-
-Think: raw honesty, strong opinions, relatable inner battles, mindset switches, life philosophy moments
-
-**RULES:**
-- Find 2-6 clips from the video that you find perfect as this prompt 
-- Use EXACT timestamps from the video (HH:MM:SS format)
-- Each clip should be 20 seconds - 3 minutes (OR MORE) long
-- Focus on: punchy quotes, emotional peaks, mindset shifts, life philosophy moments
-- KeyLine must be an ACTUAL quote from the video
-- Only include moments that would genuinely go viral as clips
-
-Analyze the video now and return the JSON:`;
+}`;
 
     // Group clips by livestreamId
     const groupClipsByAnalysis = (clips) => {
@@ -158,6 +116,7 @@ Analyze the video now and return the JSON:`;
 
     const copyPrompt = async () => {
         try {
+            console.log('Copying Prompt:', AI_STUDIO_PROMPT);
             await navigator.clipboard.writeText(AI_STUDIO_PROMPT);
             setPromptCopied(true);
             setTimeout(() => setPromptCopied(false), 2000);
