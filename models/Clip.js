@@ -42,9 +42,9 @@ const clipSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    suggestedLength: {
-        type: String,
-        default: ''
+    suggestedLengthSeconds: {
+        type: Number,
+        default: 0
     },
     suggestedTitles: [{
         type: String
@@ -57,14 +57,10 @@ const clipSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    thumbnailTopText: {
+    thumbnailText: {
         type: String,
         default: ''
     },
-    thumbnailMainText: {
-        type: String,
-        default: ''
-    }
 }, {
     timestamps: true
 });
