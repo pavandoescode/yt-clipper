@@ -1,7 +1,7 @@
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { SidebarProvider } from "@/context/SidebarContext";
-import PingWidget from "@/components/PingWidget";
+import { UIProvider } from "@/context/UIContext";
 
 export const metadata = {
   title: "YT Clipper",
@@ -13,13 +13,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <AuthProvider>
-          <SidebarProvider>
-            <PingWidget />
-            {children}
-          </SidebarProvider>
+          <UIProvider>
+            <SidebarProvider>
+              {children}
+            </SidebarProvider>
+          </UIProvider>
         </AuthProvider>
       </body>
     </html>

@@ -40,15 +40,22 @@ export async function POST(request) {
             console.log('Could not fetch video title:', e.message);
         }
 
-        // Create new livestream record
-        const livestream = new Livestream({
-            url: cleanUrl,
-            status: 'completed',
-            thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-            videoTitle,
-            videoId
-        });
-        await livestream.save();
+        // Find or create livestream record
+        let livestream = await Livestream.findOne({ videoId });
+        
+        if (!livestream) {
+            livestream = new Livestream({
+                url: cleanUrl,
+                status: 'completed',
+                thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                videoTitle,
+                videoId
+            });
+            await livestream.save();
+        } else if (!livestream.videoTitle && videoTitle) {
+            livestream.videoTitle = videoTitle;
+            await livestream.save();
+        }
 
         // Save clips
         const savedClips = [];
