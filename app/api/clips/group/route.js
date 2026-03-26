@@ -20,7 +20,7 @@ export async function GET(request) {
         require('@/models/Livestream');
 
         // Deep populate clip data and its associated livestream within groups
-        const groups = await ClipGroup.find({}).populate({
+        const groups = await ClipGroup.find({ isDone: { $ne: true } }).populate({
             path: 'clips.clipId',
             populate: { path: 'livestreamId' }
         }).sort({ createdAt: -1 });

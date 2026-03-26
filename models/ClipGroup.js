@@ -28,6 +28,10 @@ const clipGroupSchema = new mongoose.Schema({
     }],
     userId: {
         type: String
+    },
+    isDone: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

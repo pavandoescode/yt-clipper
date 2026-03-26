@@ -78,6 +78,21 @@ export default function GroupedClipsPage() {
         }
     };
 
+    const handleMarkAsDone = async (groupId) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${API_URL}/clips/group/${groupId}`, { isDone: true }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setGroups(prev => prev.filter(g => g._id !== groupId));
+            setActiveMenu(null);
+            showToast('Group marked as done!', 'success');
+        } catch (error) {
+            console.error('Mark as done error:', error);
+            showToast('Failed to mark group as done', 'error');
+        }
+    };
+
     const timestampToSeconds = (ts) => {
         if (!ts) return 0;
         const parts = ts.split(':').map(Number);
@@ -279,6 +294,18 @@ export default function GroupedClipsPage() {
                                                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                                                         </svg>
                                                         Copy ID
+                                                    </button>
+                                                    <button 
+                                                        className="aig-group-menu-item"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleMarkAsDone(group._id);
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                                        </svg>
+                                                        Mark as Done
                                                     </button>
                                                     <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }}></div>
                                                     <button 

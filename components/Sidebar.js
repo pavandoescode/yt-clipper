@@ -59,6 +59,13 @@ function Sidebar() {
           <span>Clips</span>
         </Link>
 
+        <Link href="/livestreams" className={`${styles.sidebarLink} ${isActive('/livestreams') ? styles.active : ''}`} title="Live Streams">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+          </svg>
+          <span>Live Streams</span>
+        </Link>
+
         <Link href="/saved" className={`${styles.sidebarLink} ${isActive('/saved') ? styles.active : ''}`} title="Saved Clips">
           <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
             <path d="M18 2H6c-1.103 0-2 .897-2 2v18l8-4.572L20 22V4c0-1.103-.897-2-2-2zm0 16.553-6-3.428-6 3.428V4h12v14.553z" />
@@ -67,18 +74,11 @@ function Sidebar() {
           {savedCount > 0 && <span className={styles.sidebarBadge}>{savedCount}</span>}
         </Link>
 
-        <Link href="/livestreams" className={`${styles.sidebarLink} ${isActive('/livestreams') ? styles.active : ''}`} title="Live Streams">
+        <Link href="/ai-grouping" className={`${styles.sidebarLink} ${isActive('/ai-grouping') ? styles.active : ''}`} title="AI Grouping">
           <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+            <path d="M21 10.975V8a2 2 0 0 0-2-2h-6V4.688c.305-.274.5-.668.5-1.11a1.5 1.5 0 0 0-3 0c0 .442.195.836.5 1.11V6H5a2 2 0 0 0-2 2v2.998l-.072.005A.999.999 0 0 0 2 12v2a1 1 0 0 0 1 1v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1.025zM9 13.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm6 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 18h8v2H8v-2z" />
           </svg>
-          <span>Live Streams</span>
-        </Link>
-
-        <Link href="/history" className={`${styles.sidebarLink} ${isActive('/history') ? styles.active : ''}`} title="History">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
-          </svg>
-          <span>History</span>
+          <span>AI Grouping</span>
         </Link>
 
         <Link href="/grouped-clips" className={`${styles.sidebarLink} ${isActive('/grouped-clips') ? styles.active : ''}`} title="Grouped Clips">
@@ -89,11 +89,11 @@ function Sidebar() {
           <span>Grouped Clips</span>
         </Link>
 
-        <Link href="/ai-grouping" className={`${styles.sidebarLink} ${isActive('/ai-grouping') ? styles.active : ''}`} title="AI Grouping">
+        <Link href="/history" className={`${styles.sidebarLink} ${isActive('/history') ? styles.active : ''}`} title="History">
           <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M21 10.975V8a2 2 0 0 0-2-2h-6V4.688c.305-.274.5-.668.5-1.11a1.5 1.5 0 0 0-3 0c0 .442.195.836.5 1.11V6H5a2 2 0 0 0-2 2v2.998l-.072.005A.999.999 0 0 0 2 12v2a1 1 0 0 0 1 1v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1.025zM9 13.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm6 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 18h8v2H8v-2z" />
+            <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
           </svg>
-          <span>AI Grouping</span>
+          <span>History</span>
         </Link>
       </nav>
 
